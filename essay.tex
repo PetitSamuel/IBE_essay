@@ -44,13 +44,34 @@ systems currently in use such as RSA.
 
 So let's compare both systems and try to explain why IBE is not as popular
 
-
-
-\subsection{What is public key encryption ?}
-Explain public / asymmetric key paired encryption
+\subsection{Introduction to Public Key Cryptography}
+Public Key Cryptography, also called Asymmetric Cryptography is an 
+encryption scheme. In other words, it is a method for encrypting messages.
+Unlike symmetric cryptography which uses the same key for both encrypting and decrypting
+messages, asymmetric cryptography uses two different keys such that one 
+is used for encrypting and the other for decrypting information.
+In this context, a key is a string of characters that is used in some mathematical
+formula to turn a information (a message for example) such that it is impossible to understand in its encrypted form. 
+Similarly, we would then also use a key to map the encrypted information back to its original, usable form.
+In asymmetric encryption, we typically call the encryption key
+the Public Key, and the decryption key the Private Key.
+The first asymmetric key cryptosystem was published in 1976 by Whitfield Diffie and Martin Hellman, previously,
+all useful modern encryption system used symmetric key encryption systems. 
+While both systems still have their usages in todays world,
+asymmetric key encryption systems are now used on a daily basis throughout the world, with 
+applications such as both HTTP over TLS and HTTP over SSL protocols, digitally signed files,
+encrypted messaging services and many other. 
 
 \subsubsection{How it works}
-explain concepts of public key encryption
+Put simply, let's say we had a public key $K_{public}$ and $K_{private}$.
+We would then obtain a ciphertext $c$ with the following formula: 
+\begin{equation*}
+    c = K_{public}(message)
+\end{equation*}
+Similarly, we obtain the original message from the ciphertext with the following formula:
+\begin{equation*}
+    message = K_{private}(c)
+\end{equation*}
 
 \subsection{Different ways it is implemented}
 explain different implementations
