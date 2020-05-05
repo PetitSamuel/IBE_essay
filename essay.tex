@@ -3,6 +3,8 @@
 \usepackage{amsmath}
 \usepackage{algorithmic}
 \usepackage{url}
+\usepackage{listings}
+
 % Basically, \url{my_url_here}.
 
 % correct bad hyphenation here
@@ -80,15 +82,45 @@ There are many different implementations of asymmetric
 explain Requirements here
 
 \subsubsection{How RSA is Implemented}
-Perhaps on of the most famous system based on public key cryptography is RSA.
-An RSA encryption scheme uses 3 different algorithms, Setup, Encryption and Decryption. \\
-Setup in this case is the process of generating both Public and Private keys.
-The algorithm used for this is the following:
 
-
-
+\begin{algorithmic}
+\STATE $p \leftarrow prime()$
+\COMMENT{prime() returns a prime number}
+\STATE $q \leftarrow prime(N)$
+\STATE $n \leftarrow p \* q$
+\STATE $\phi (n) \leftarrow (p - 1) \* (q - 1)$
+\STATE $e \leftarrow coprime(\phi (n))$
+\COMMENT{coprime returns a value coprime to $\phi$ where $1 < e < \phi $}
+\STATE $d \equiv e^{-1} mod \phi(n)$
+\end{algorithmic}
+To explain a bit more about this algorithm, we start by generating randomly two prime numbers
+p and q. We obtain n from their product, n is used as part of the encryption and decryption function
+as we will see soon. Then we use Euler's totient function such as to count the positive integers
+up to $(p - 1) \* (q - 1)$, we could alternatively use Carmichael's totient function here 
+with a slight change in algorithm, the same keys would be generated regardless. We then pick a value e
+such that it is positive, smaller than our value obtained from Euler's totient $\phi(n) $ function and coprime to it.
+We have then obtained the public key $\{e,n\}$. To compute our private key with simply compute 
+the modular multiplicative inverse of e modulo $\phi(n)$ ($d \equiv e^{-1} mod(\phi(n))$) to obtain
+our private key: $\{d,n\}$.
 \subsubsection{Explain how IBE works}
 explain IBE systems
+
+
+Given a public key $\{e,n\}$, we can then very simply encrypt a message $M$.
+This is done simply by computing:
+\begin{equation*}
+    C = M^{e}\mod n
+\end{equation*}
+This part is fairly simple as it only contains a single operation, though keep in mind that
+in practice $e$ could be a very large number so $M^{e}$ could be demanding on the device.
+
+
+Finally, for decryption, given that we have a private key $\{d,n\}$, and a ciphertext
+which was encrypted using the private key's corresponding public key, we can obtain the original
+message M using a formula very similar to that of the encryption:
+\begin{equation*}
+    M = C^{d}\mod n
+\end{equation*}
 
 \subsection{Math Systems at the core of Public Key Encryption}
 Explain that at the core of public key encryption, underlies
