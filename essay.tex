@@ -58,29 +58,34 @@ the Public Key, and the decryption key the Private Key.
 The first asymmetric key cryptosystem was published in 1976 by Whitfield Diffie and Martin Hellman, previously,
 all useful modern encryption system used symmetric key encryption systems. 
 While both systems still have their usages in todays world,
-asymmetric key encryption systems are now used on a daily basis throughout the world, with 
-applications such as both HTTP over TLS and HTTP over SSL protocols, digitally signed files,
-encrypted messaging services and many other. 
+asymmetric key encryption systems are now used on a daily basis throughout the world. With 
+systems such as both HTTP over TLS and HTTP over SSL protocols, digitally signed files, bitcoin,
+encrypted messaging services and many other all using some for of asymmetric encryption. 
 
 \subsubsection{How it works}
 Put simply, let's say we had a public key $K_{public}$ and $K_{private}$.
-We would then obtain a ciphertext $c$ with the following formula: 
+We would then obtain a ciphertext $cipher$ with the following formula: 
 \begin{equation*}
-    c = K_{public}(message)
+    cipher = K_{public}(message)
 \end{equation*}
 Similarly, we obtain the original message from the ciphertext with the following formula:
 \begin{equation*}
-    message = K_{private}(c)
+    message = K_{private}(cipher)
 \end{equation*}
 
-\subsection{Different ways it is implemented}
-explain different implementations
+\subsection{Different implementations}
+There are many different implementations of asymmetric 
 
 \subsubsection{Requirements for public key algorithms (key gen, encrypt and decrypt)}
 explain Requirements here
 
-\subsubsection{Explain how RSA works}
-explain RSA systems - a typical implementation
+\subsubsection{How RSA is Implemented}
+Perhaps on of the most famous system based on public key cryptography is RSA.
+An RSA encryption scheme uses 3 different algorithms, Setup, Encryption and Decryption. \\
+Setup in this case is the process of generating both Public and Private keys.
+The algorithm used for this is the following:
+
+
 
 \subsubsection{Explain how IBE works}
 explain IBE systems
