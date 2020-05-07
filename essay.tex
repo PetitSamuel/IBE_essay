@@ -90,7 +90,13 @@ keys over a non secure channel. RSA is a very popular cryptosystem which include
 algorithms and functions to compute a set of keys as well as handling encryption and decryption.
 
 \subsection{An Overview of IBE}
-\subsubsection{Explain how it works}
+Explain what is exactly IBE now that we know more about public key encryption
+
+\subsubsection{IBE typical implementation}
+how is an IBE system implemented
+
+\subsubsection{What are its advantages and flaw?}
+pros and cons of IBE
 
 \subsection{An Overview of RSA}
 \subsubsection{Key generation}
@@ -175,15 +181,41 @@ would take a very long amount of time.
 Goal: Explain that at the core of public key encryption, underlies
 many important mathematical concepts.
 
-\subsubsection{Prime numbers}
-If there is something you may have noticed, it may be that prime numbers
-are at the core of many of the concepts being used in the types of 
-asymmetric encryptions we are covering here. There is a reason
-for that, it is the fact that primes are very easy to multiply together,
-however factorising a number into two prime numbers is extremely computer intensive.
-Much more so than it would be if the numbers weren't primes. 
 
-So then, how do we know a number is prime ? Do we try all possible factors
+\subsubsection{Discrete logarithms}
+The difficulty of breaking a Public Key encryption system is based on the 
+Discrete Logarithm problem (DLP). 
+Given a multiplicative group $G_{n}^{*}$ of order $n$,
+Let's then define the element $\alpha$ such that it is a subgroup of $G_{n}^{*}$ 
+(i.e. $\alpha \subseteq G_{n}^{*}$). We then have $\alpha$, a subgroup of $G_{n}^{*}$,
+note that $\alpha$ is also cyclic of order $n$ (same as $G_{n}^{*}$).
+
+
+The Discrete Logarithm Problem is then defined as, given $\beta \in \alpha$,
+find $x$ such that $0 \leq x \leq n - 1$.
+\begin{equation}
+    \alpha^{x} \equiv B\mod p
+\end{equation}
+
+It is important to note that not the discrete logarithm problem
+is not always hard to solve. In the context of encryption we choose a group
+$Z_{p}^*$ with $p$ a prime number which makes this problem very hard and 
+expensive to solve.
+It is also worth noting that not all primes are safe to use and some primes
+make this problem much easier to solve, using methods such as the 
+Pohlig–Hellman algorithm. In order to be safe, one can follow the rule
+that a prime must be of the form $2p + 1$, where $p$ is a large prime number. 
+
+\subsubsection{Prime numbers}
+As we have started to introduce prime numbers earlier, we can't help 
+but notice that prime numbers are at the core of many concepts being
+used in the types of  asymmetric encryptions we are covering here. 
+There is a reason for that, it is the fact that primes are very easy to 
+multiply together, however factorising a number into two prime numbers is 
+extremely computer intensive. Much more so than it would be if the numbers 
+weren't primes. 
+
+So then, how do we check that a number is prime ? Do we try all possible factors
 until we know we have a prime number? This approach would work, however, it 
 would be terribly expensive when we are generating very large primes.
 Thankfully, there are mathematical theorems we can use to make this check easier.
@@ -217,28 +249,50 @@ Its distribution is described as such:
 \end{equation*}
 Where $\pi(N)$ is the prime counting function: it computes the amount of primes
 that are less than or equal to $N$.
-\\
+
+\subsubsection{Square and multiply}
+Something you may have noticed is that some of these operations require 
+computing many exponents, given the fact that we generaly pick very large 
+numbers for encryptions, finding a way to compute massive exponents 
+in a way that is more manageable for computers would help efficient computations 
+quite drastically. This is exactly what the square and multiply algorithm
+enables, it is essentially an algorithm for computing exponents iteratively.
+This algorithm relies on the fact that exponent value can be broken down into
+the multiplication of multiple terms:
+\begin{equation*}
+    x^{n} =    
+    \begin{Bmatrix} 
+        x\*(x^{2})^{\frac{n - 1}{2}} \textrm{, if n is odd} \\
+        x\*(x^{2})^{\frac{n}{2}} \textrm{, if n is even} \\  
+        1 \textrm{, if n = 0} \\  
+
+     \end{Bmatrix}
+\end{equation*}
+
+
+This algorithm can be implemented such that is it based on binary values,
+by using the bit values to determine which powers are computed.
+Here is a quick example using $x^5$. $5$ in binary is $101$.
+Iterating bit by bit: \\
+Initialisation: result $= 1$ \\
+Step 1: $\textrm{result}=\textrm{result}^2$; $(= x^0)$; bit 1 is 1; $\textrm{result} = \textrm{result}\*x$; ($= x^1$) \\
+Step 2: $\textrm{result}=\textrm{result}^2$; ($= x^2$); bit 2 is 0, so there is no computation this step. \\
+Step 3: $\textrm{result}=\textrm{result}^2$; ($= x^4$); bit 3 is 1, $\textrm{result} = \textrm{result}\*x$; ($= x^5$) \\
+
+The pattern from this example is fairly straightforward, for every bit iteration, 
+square our current result, then multiply by $x$ if the bit at the current position is $1$.
+
+
+Note that side attacks are possible on this particular algorithm, due to 
+the fact that based on the iteration being a $0$ or a $1$ a single or two
+operations are executed. 
+
 \subsubsection{Extended euclidean algo to find gcd, coefficients}
 euclidean algo
-
-
-\subsubsection{Discrete logarithms}
-discrete log problem
 
 \subsubsection{Chinese remainder theorem}
 chinese remainded thm at the core of decryption (or encryption)
 
-\subsubsection{Square and multiply}
-square and multiply to compute large exponents
-
-\subsection{What is identity based encryption ?}
-Explain what is exactly IBE now that we know more about public key encryption
-
-\subsubsection{IBE typical implementation}
-how is an IBE system implemented
-
-\subsubsection{What are its advantages and flaw?}
-pros and cons of IBE
 
 \subsection{IBE vs RSA}
 Compare the two
