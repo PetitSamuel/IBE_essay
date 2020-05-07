@@ -59,6 +59,28 @@ Similarly, we obtain the original message from the ciphertext with the following
     message = K_{private}(cipher)
 \end{equation*}
 
+
+\subsubsection{Requirements for public key algorithms}
+In order for a Public key encryption scheme to be safe, we have a few requirements.
+The first one being ease of setup: it should be computationally easy to generate
+a pair of Public and Private keys.
+
+Encrypting a message should also be computationally easy, this means that a 
+sender X, with a message to send M and knowing the recipient's public key 
+should be able to compute the ciphertext fairly easily.
+
+Similarly, decrypting a message should be computationally easy, thus meaning that
+a receiver Y, with a ciphertext that was encrypted using his own public key 
+should be able to obtain the original message using an easy computation.
+
+In terms of keys, it should be impossible to obtain the private key from a 
+public key, since these are, as its name suggests, public this would be a 
+massive security issue.
+
+Finally, it should also be impossible to find a message from the encrypted text and 
+the public key used to obtain the ciphertext.
+
+
 \subsubsection{Different implementations of Asymmetric Encryption}
 Many popular protocols and systems can be used as examples of working 
 asymmetric encryption. To start with, Identity Based Encryption (IBE)
@@ -67,14 +89,11 @@ the Diffie-Hellman key exchange protocol which is used to exchange cryptographic
 keys over a non secure channel. RSA is a very popular cryptosystem which includes
 algorithms and functions to compute a set of keys as well as handling encryption and decryption.
 
+\subsection{An Overview of IBE}
+\subsubsection{Explain how it works}
 
-\subsection{Different implementations}
-There are many different implementations of asymmetric 
-
-\subsubsection{Requirements for public key algorithms (key gen, encrypt and decrypt)}
-explain Requirements here
-
-\subsubsection{How RSA is Implemented}
+\subsection{An Overview of RSA}
+\subsubsection{Key generation}
 
 \begin{algorithmic}
 \STATE $p \leftarrow prime()$
@@ -96,7 +115,7 @@ We have then obtained the public key $\{e,n\}$. To compute our private key with 
 the modular multiplicative inverse of e modulo $\phi(n)$ ($d \equiv e^{-1} mod(\phi(n))$) to obtain
 our private key: $\{d,n\}$.
 
-
+\subsubsection{Encryption}
 Given a public key $\{e,n\}$, we can then very simply encrypt a message $M$.
 This is done simply by computing:
 \begin{equation*}
@@ -106,6 +125,7 @@ This part is fairly simple as it only contains a single operation, though keep i
 in practice $e$ could be a very large number so $M^{e}$ could be demanding on the device.
 
 
+\subsubsection{Decryption}
 Finally, for decryption, given that we have a private key $\{d,n\}$, and a ciphertext
 which was encrypted using the private key's corresponding public key, we can obtain the original
 message M using a formula very similar to that of the encryption:
@@ -113,22 +133,46 @@ message M using a formula very similar to that of the encryption:
     M = C^{d}\mod n
 \end{equation*}
 
-RSA is secure given the fact that factoring numbers is complicated and expensive.
+
+\subsubsection{Computing Signatures}
+RSA supports the use for signature. Signatures are used in order to make 
+sure a message was sent by a specific person.
+
+The first step for verifying signatures is for the sender to generate one.
+Using the senders private key and the message to send we can obtain the signature
+S:
+\begin{equation*}
+    S = M^{d}\mod n
+\end{equation*}
+We would then send the signature S with the ciphertext to the recipient.
+Note that we must respect $M < n$ here too.
+
+
+\subsubsection{Verifying signatures}
+The person receiving the message can then verify the identity of the sender.
+If we use the senders public key in the following formula to obtain the original
+message, then we can be certain of the senders identity.
+\begin{equation*}
+    M = S^{e}\mod n
+\end{equation*}
+Once again, $M < n$ is required.
+
+
+\subsubsection{Security}
+RSA's security relies on the fact that factoring numbers is complicated and expensive.
 For instance, let's assume that we have a public key $\{e,n\}$, we could in theory find
-the values for $p$ and $q$ by factoring $n$. Recall that $n = p\*q$. Then all we would have to do is 
+the values for $p$ and $q$ from the keygeneration algorithm by factoring $n$ (recall that $n = p\*q$). Then all we would have to do is 
 use Euler's theorem to obtain $\phi(n)$ and from there we could find $e$ and finally 
-obtain the private key $d$ from the equation $e\*d = 1\mod \phi(n)$.
+obtain the private key $d$ by solving the equation $e\*d = 1\mod \phi(n)$.
 
 In practise though, we pick very large values for p and n, factoring very large prime
 numbers is very hard and trying to obtain $p$ and $q$ using a brute force method
 would take a very long amount of time.
 (HOW MUCH ??? )
 
-\subsubsection{Explain how IBE works}
-explain IBE systems
 
 \subsection{Math Systems at the core of Public Key Encryption}
-Explain that at the core of public key encryption, underlies
+Goal: Explain that at the core of public key encryption, underlies
 many important mathematical concepts.
 
 \subsubsection{Prime numbers}
@@ -144,13 +188,39 @@ until we know we have a prime number? This approach would work, however, it
 would be terribly expensive when we are generating very large primes.
 Thankfully, there are mathematical theorems we can use to make this check easier.
 
+Two famous mathematical methods to check if a number is prime 
+are Miller–Rabin and Fermat's primality test. 
+Fermat's little theorem is the basis for Fermat's primality test. It states that
+given, $a$, an integer and $p$ a prime number where $a$ is not divisible by $p$, we have:
+\begin{equation*}
+    a^{p} \equiv a (\mod p)
+\end{equation*}
 
+Thanks to this equation, we can use it to find Fermat's Primality test: 
+\begin{equation*}
+    a^{p - 1} \equiv 1 (\mod p)
+\end{equation*}
+We use it by picking two integers $a$ and $p$ such that $a$ is not divisible by $p$.
+If the equality holds, then $p$ is a prime number.
 
+The way we generate large prime numbers is by generating integers and testing if the generated integer is
+prime. We can compute the probability of picking a prime number given a size. For instance if we wanted to 
+find a prime number $a$ with a bit size of $2^{1024}$. We would then have a probability of picking a prime
+number of \\
+\begin{center}
+    P(a is prime) $= \frac{2}{\ln(2^{1024})} = \frac{2}{1024\ln(2)} = 0.00281776375$
+\end{center}
+This probability is based on the more general Prime number theorem which statistically describes the distribution of prime numbers.
+Its distribution is described as such:
+\begin{equation*}
+    \pi(N) \sim \frac{1}{log(N)}
+\end{equation*}
+Where $\pi(N)$ is the prime counting function: it computes the amount of primes
+that are less than or equal to $N$.
+\\
 \subsubsection{Extended euclidean algo to find gcd, coefficients}
 euclidean algo
 
-\subsubsection{Fermat's little theorem}
-fermats little thm, its place in public crypto
 
 \subsubsection{Discrete logarithms}
 discrete log problem
