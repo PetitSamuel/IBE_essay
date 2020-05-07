@@ -285,13 +285,67 @@ square our current result, then multiply by $x$ if the bit at the current positi
 
 Note that side attacks are possible on this particular algorithm, due to 
 the fact that based on the iteration being a $0$ or a $1$ a single or two
-operations are executed. 
+operations are executed. For instance if a hacker could access the power drawn
+by the device overtime then we could notice that more power would be drawn to
+compute an iteration of this algorithm with a bit value of $1$ in comparison to 
+a $0$. In some cases we can monitor these from the frequencies emitted by a devie
+and thus we may be able to obtain a private key using such methods.
+
+There are ways to counter this, known as padding (explained later and add a bit here).
+
+\subsubsection{Chinese remainder theorem}
+The chinese remainder theorem plays a big role in optimising 
+the amount of work required for decrypting a message as well as 
+signature verification.
+
+
+Remember from the RSA setup stage that we compute 
+$n = p\*q$, where n is part of the public key.
+Also remember that decryption requires a ciphertext $C$ and
+a private key $\{d,n\}$ to obtain the plain message $M$.
+$M = C^{d}\mod n$.
+
+We can use the Chinese remainder theorem to split the computation of
+modular exponentiation, in the case of decryption using $p$ and $q$.
+\begin{equation*}
+    M_{P} = M\mod P
+\end{equation*}
+\begin{equation*}
+    M_{Q} = M\mod Q
+\end{equation*}
+We can even push the optimisation furter:
+\begin{equation*}
+    M_{P} = M\mod P = (C^{d}\mod n)\mod p
+\end{equation*}
+\begin{equation*}
+    = C^{d}\mod p\\ = C^{D\mod(P-1)}\mod p
+\end{equation*}
+We can do these simplifications thanks to the fact that $n = pq$ thus 
+\begin{equation*}
+    (C^{d}\mod n)\mod p = C^{d}\mod p
+\end{equation*}
+And thanks to Fermat's little theorem giving us the final optimisation.
+Note that $D\mod(p - 1)$ can be computed on setup instead of during decryption
+thus making this approach much faster for message decryption.
+
+Once we have computed both $M_{q}$ and $M_{p}$, we then need to find such 
+that M stasfies both:
+\begin{equation*}
+    M \equiv (C^{d}\mod n)\mod q
+\end{equation*}
+\begin{equation*}
+    M \equiv (C^{d}\mod n)\mod q
+\end{equation*}
+Using the fact that p and q are relatively prime and because of the 
+chinese remainder theorem, we can directly assume that:
+\begin{equation*}
+    M \equiv (C^{d}\mod n)\mod pq = M \equiv C^{d}\mod pq
+\end{equation*}
+Thus obtaining the decrypted message M which is what we were looking for.
+
 
 \subsubsection{Extended euclidean algo to find gcd, coefficients}
 euclidean algo
-
-\subsubsection{Chinese remainder theorem}
-chinese remainded thm at the core of decryption (or encryption)
 
 
 \subsection{IBE vs RSA}
