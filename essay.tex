@@ -345,7 +345,18 @@ Thus obtaining the decrypted message M which is what we were looking for.
 
 
 \subsubsection{Extended euclidean algo to find gcd, coefficients}
-euclidean algo
+The final piece of theory that we will go through here is also a very
+commonly used one: the Extended euclidian algorithm. It is, 
+as its name suggests an extention to the euclidian algorithm, with 
+the difference that with the extended version we obtain coefficients 
+$x$ and $y$ in addition to the greatest common divisor, that is:
+\begin{equation*}
+    ax + by = \gcd(a,b)
+\end{equation*}
+
+Its use case it to enable computing modular inverses, a very common operation in 
+cryptography efficiently. It characterised by a squence of operations until we reach
+our answer.
 
 
 \subsection{IBE vs RSA}
