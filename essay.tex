@@ -21,14 +21,12 @@ The abstract goes here.
 \end{abstract}
 
 \section{Introduction}
-Will be studying IBE. A type of Asymmetric paired keys 
-encryption system. Charcterised with the fact that one of its
-keys identifies the recipient (email...phone no).
-
-Makes a lot of sense to compare with classical 
-systems currently in use such as RSA.
-
-So let's compare both systems and try to explain why IBE is not as popular
+We will be studying the concept of Identity Based Encryption (IBE),
+a type of asymmetric (or public key) encryption system.
+It is characterised with the fact that one of its keys identifies the recipient
+(for example an email address). We will explain how such a system is possible
+and compare it to a more widely known encryption scheme: RSA. Perhaps, we will
+then be able to understand why IBE is not as widely used as RSA is today. 
 
 \subsection{Introduction to Public Key Cryptography}
 Public Key Cryptography, also called Asymmetric Cryptography is an 
@@ -90,11 +88,11 @@ keys over a non secure channel. RSA is a very popular cryptosystem which include
 algorithms and functions to compute a set of keys as well as handling encryption and decryption.
 There are also multiple mathematical methods that are used by different encryption schemes,
 these include  elliptic curves, Billinear maps or Weil and Tate Pairings to name
-the most commonly used ones.
+some of the most commonly used ones.
 
 
 
-\subsection{An Overview of IBE}
+\subsection{Introduction to Identity Based Encryption}
 Identity based encryption (IBE), is a type of public key encryption 
 where the public key is an arbitrary string which represents information
 about a user's identity, for example, an email address. 
@@ -261,6 +259,16 @@ it expires and then will have to request a new one to the PKG. The time each key
 then be variable based on how one decides to implement the system, theoretically a key could 
 be valid for years or minutes.
 
+\subsubsection{Improvements thanks to IBE}
+While identity based encryption has its flaws, what it did 
+is enable further research. From IBE was derived what is called
+attribute based encryption (or ABE), a system designed 
+for use with biometric values.
+
+
+Secondly, both IBE and ABE were the basis for functionnal encryption, 
+which takes the theories from both methods and generalises their ideas.
+
 
 \subsubsection{Comparing to a commonly used public key encryption scheme}
 Let's now see how a very popular system such as the RSA encryption scheme works, 
@@ -343,8 +351,7 @@ obtain the private key $d$ by solving the equation $e\*d = 1\mod \phi(n)$.
 
 In practise though, we pick very large values for p and n, factoring very large prime
 numbers is very hard and trying to obtain $p$ and $q$ using a brute force method
-would take a very long amount of time.
-(HOW MUCH ??? )
+would be very expensive.
 
 
 \subsection{Mathematical Theorems enabling RSA}
@@ -440,8 +447,9 @@ the multiplication of multiple terms:
 \end{equation*}
 
 
-This algorithm can be implemented such that is it based on binary values,
-by using the bit values to determine which powers are computed.
+This algorithm can be implemented such that is it based on 
+binary values, by using the bit values to determine which 
+powers are computed.
 Here is a quick example using $x^5$. $5$ in binary is $101$.
 Iterating bit by bit: \\
 Initialisation: result $= 1$ \\
@@ -514,29 +522,10 @@ chinese remainder theorem, we can directly assume that:
 Thus obtaining the decrypted message M which is what we were looking for.
 
 
-\subsubsection{Extended euclidean algo to find gcd, coefficients}
-The final piece of theory that we will go through here is also a very
-commonly used one: the Extended euclidian algorithm. It is, 
-as its name suggests an extention to the euclidian algorithm, with 
-the difference that with the extended version we obtain coefficients 
-$x$ and $y$ in addition to the greatest common divisor, that is:
-\begin{equation*}
-    ax + by = \gcd(a,b)
-\end{equation*}
+There are many other mathematical theorems and optimisation
+used in the implementation of RSA, however this should serve as an introduction
+to some of the main ideas.
 
-Its use case it to enable computing modular inverses, a very common operation in 
-cryptography efficiently. It characterised by a squence of operations until we reach
-our answer.
-
-\subsection{Improvements thanks to IBE}
-While identity based encryption has its flaws, what it did 
-is enable further research. From IBE was derived what is called
-attribute based encryption (or ABE), a system designed 
-for use with biometric values.
-
-
-Secondly, both IBE and ABE were the basis for functionnal encryption, 
-which takes the theories from both methods and generalises their ideas.
 
 \subsection{Comparisons between IBE and RSA}
 Let's now go through the many pros and cons of the IBE schemes we 
@@ -575,6 +564,42 @@ this could enable for applications with minimal setup for users.
  
 
 \subsubsection{Drawbacks of IBE}
+The first notable drawback is that, by definition of the 
+IBE scheme we've considered, there exists a set of master
+public and private keys. This means that the PKG is in a position
+of generating all private keys and decrypting all messages that go through 
+the system. This is known as a key escrow, it can, in some cases
+be advantageous as a law may require for such a system or in an 
+enterprise environement a key escrow may be desirable. Another
+way this could be seen as an advantage is in some cases this can allow 
+for recovering encrypted data in the event of the loss of a private key by a user. 
+Finally, another way this is an advantage is for delegation of keys, where in some 
+cases multiple persons may require to read the same messages.
+
+
+However, for a public application, this requires great trust in the system 
+and thus by definition is not widly adopted in systems such as 
+private channels or encrypted messaging systems. The much more 
+widly used RSA is much preferred in such applications, even though it requires
+a key distribution system.
+It is also a concern as, theoretically, if the master private key was stolen,
+then an attacker would be in a position of decrypting all messages, this 
+would remove all security that was previously in the system. This problem
+can be solved by adding key revocation, however it is worth noting that the 
+scheme we have studied here does not enable for key revocation or expiration. 
+In RSA, none of this is an issue since there exists no master key that enables 
+somehow the decryption of all messages, in fact, in RSA if a single key is cracked,
+then only a single user will be impacted. This is also the case for IBE however,
+cracking the main private key would mean the decryption of all users message becomes possible.
+In short, IBE, by definition requires a lot of trust in the system while it is not 
+the case for RSA.
+
+
+Another drawback is that, in an IBE scheme, users need to be given their private key.
+This can be solved by using secure communication channels, or even giving a physical copy of the 
+private key on a usb key for example, however it is a drawback nonetheless since 
+a private key is very sensible information (more so than a single message) and systems 
+like RSA do not require to do so, a private key is generated on the device it is used.
 
 
 \subsection{Attacking a Public Key Encryption system}
@@ -600,13 +625,45 @@ to attackers, one could try to encrypt all messages until there is a match.
 
 
 \section{Conclusion}
-The conclusion goes here.
+We have seen that an Identity Encryption system 
+introduces new concepts to the world of cryptography.
+It also pushed research further by inspiring researchers
+to discover what is possible from such a system where the public key is 
+meaningful. One of the reasons that public key encryption systems 
+were originally not widely used is due to the requirement of a public key 
+distribution system, IBE solves that problem however that solution comes with 
+its drawbacks. Mainly the fact that a key escrow exists by definition in the system 
+without having the choice is the main drawback for IBE, it requires too much 
+trust in the system for public applications. On the other hand, some argue that 
+IBE is a better compromise between security and complexity for users, the main 
+question being wether users see it that way or not.
+Perhaps, for the moment, IBE's advnatages are more suited for specific 
+environements such as use within an enterprise for example.  
+A lot of research is currently being done on this topic, so perhaps one day a variant 
+of such an IBE scheme could become the industry standard for encryption.
 
-\appendices
-\section{Proof of the First Zonklar Equation}
-Appendix one text goes here.
+\appendix
+\section{Pairing Based cryptosystems}
+[1]Ben Lynn June "ON THE IMPLEMENTATION OF PAIRING-BASED CRYPTOSYSTEMS", 
+page 1 to 45.
 
-\section{}
-Appendix two text goes here.
+\section{IBE Elliptic curve scheme}
+[2] Dan Boneh, Matthew Franklin "Identity-Based Encryption from the Weil Pairing"
+
+\section{RSA BASED IBE scheme}
+[3] Clifford Cocks, "An Identity Based Encryption Scheme based on Quadratic Residues"
+
+\section{Implementation}
+[4] Stanford IBE Secure Email Implementation \url{https://crypto.stanford.edu/ibe/download.html}
+
+\section{Revocable IBE}
+[5] Donghoon Chang, Amit Kumar Chauhan, Sandeep Kumar, Somitra Kumar Sanadhya "Revocable Identity-based Encryption from Codes with Rank Metric"
+
+\section{IBE without Key Escrow}
+[6] Keita Emura, Shuichi Katsumata, Yohei Watanabe "Identity-Based Encryption with Security against the KGC: A Formal Model and Its Instantiations"
+
+\section{Diffie–Hellman Assumption IBE}
+[7] Nico Dottling, Sanjam Garg "Identity-Based Encryption from the Diffie-Hellman Assumption"
+
 \end{document}
 
