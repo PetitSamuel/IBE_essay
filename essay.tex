@@ -349,8 +349,7 @@ would be very expensive.
 \subsubsection{Mathematical Theorems enabling RSA}
 There are many mathematical theorems and optimisation
 used in the implementation of RSA as well as RSA based encryption schemes such as 
-Cock's scheme for IBE, let's now introduce some
-the most common ones here.
+Cock's scheme for IBE, let's now introduce some of the most common ones here.
 
 
 \subsubsection*{Discrete logarithms}
@@ -380,7 +379,8 @@ that a prime must be of the form $2p + 1$, where $p$ is a large prime number.
 \subsubsection*{Prime numbers}
 As we have started to introduce prime numbers earlier, we can't help 
 but notice that prime numbers are at the core of many concepts being
-used in the types of  asymmetric encryptions we are covering here. 
+used in the types of asymmetric encryptions we are covering here 
+(even some elliptic curve based systems). 
 There is a reason for that, it is the fact that primes are very easy to 
 multiply together, however factorising a number into two prime numbers is 
 extremely computer intensive. Much more so than it would be if the numbers 
@@ -406,8 +406,8 @@ Thanks to this equation, we can use it to find Fermat's Primality test:
 We use it by picking two integers $a$ and $p$ such that $a$ is not divisible by $p$.
 If the equality holds, then $p$ is a prime number.
 
-The way we generate large prime numbers is by generating integers and testing if the generated integer is
-prime. We can compute the probability of picking a prime number given a size. For instance if we wanted to 
+The way we generate large prime numbers is by randomly picking integers and testing it for primality.
+We can compute the probability of picking a prime number given a size. For instance if we wanted to 
 find a prime number $a$ with a bit size of $2^{1024}$. We would then have a probability of picking a prime
 number of \\
 \begin{center}
@@ -460,10 +460,11 @@ the fact that based on the iteration being a $0$ or a $1$ a single or two
 operations are executed. For instance if a hacker could access the power drawn
 by the device overtime then we could notice that more power would be drawn to
 compute an iteration of this algorithm with a bit value of $1$ in comparison to 
-a $0$. In some cases we can monitor these from the frequencies emitted by a devie
+a $0$. In some cases we can monitor these from the frequencies emitted by a device
 and thus we may be able to obtain a private key using such methods.
 
-There are ways to counter this, known as padding (explained later and add a bit here).
+There are ways to counter this by using techniques such as padding or randomising the 
+algorithms iterations.
 
 \subsubsection*{Chinese remainder theorem}
 The chinese remainder theorem plays a big role in optimising 
@@ -500,8 +501,8 @@ And thanks to Fermat's little theorem giving us the final optimisation.
 Note that $D\mod(p - 1)$ can be computed on setup instead of during decryption
 thus making this approach much faster for message decryption.
 
-Once we have computed both $M_{q}$ and $M_{p}$, we then need to find such 
-that M satisfies both:
+Once we have computed both $M_{q}$ and $M_{p}$, we then need to find $M$ such 
+that it satisfies both:
 \begin{equation*}
     M \equiv (C^{d}\mod n)\mod q
 \end{equation*}
@@ -518,12 +519,12 @@ Thus obtaining the decrypted message M which is what we were looking for.
 
 \subsection{Comparisons between IBE and RSA}
 Let's now go through the many pros and cons of the IBE schemes we 
-have covered here and, where appropriate, compare to the functioning of the 
+have covered here and, where appropriate, compare to the the 
 RSA encryption scheme.
 
 
 \subsubsection{Advantages of IBE}
-The first obvious advantage to IBE is the fact that we use 
+The first obvious advantage to IBE is that it uses 
 meaningful public keys. This removes the need for public key distribution system
 that is typically in place in most public key encryption systems. For example,
 RSA typically distributes public keys using Certificate Authorities (CA), these authorities
