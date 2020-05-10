@@ -157,7 +157,9 @@ using the private key generated in the extract action.
 
 \subsubsection{Mathematical theory}
 As mentionned previously, there are different schemes using different mathematical concepts,
-let's focus here on Elliptic curve based schemes. 
+let's focus here on Elliptic curve based schemes. This topic is quite maths heavy thus 
+I will try to focus on the high level mathematical theory here whithout 
+going into too much detail.
 
 
 An elliptic curve is defined by an equation of the form 
@@ -177,11 +179,94 @@ to obtain x (the amount of times P was added to itself, or the amount of execute
 Thus giving us a variant to the Diffie Hellman problem.
 
 Finally, it is worth noting that we can have a IBE system which uses an Billinear map 
-$e: G_{1}\timesG_{1} \rightarrow G_{2}$ so long as the Computational Diffie-Hellman problem 
-in $G_{1}$ is hard. One way to do so in the current elliptic curve system we are considering is to use 
-the Weil pairing on an elliptic curve.
-\subsubsection{What are its advantages and flaw?}
-pros and cons of IBE
+$e: G_{1}\times G_{1} \rightarrow G_{2}$ so long as the Computational Diffie-Hellman problem 
+in $G_{1}$ is hard, meaning we can't map back to the group $G_{1}$ from $G_{2}$. 
+One way to do so in the current elliptic curve system we are considering is to use 
+the Weil pairing on an elliptic curve. Ideally the Billinear map should be efficiently computable.
+
+
+Let's take a look at the high level maths behind the 4 algorithms which enable 
+encryption and decryption of messages using these concepts we just saw.
+
+The setup would then pick an elliptic curve, a secret $s$ and a point on the 
+elliptic curve P. The system then publishes $P$ and $P\times s$ as the master public key.
+
+
+Encryption would then happen by hashing the ID attribute (for example bob's email address)
+to a point on the elliptic curve (let our hash function be $h = g^x$ from some x). Thus
+hashing bob's ID would set $ x = ID$. We obtain a point of the curve by doing so since $g$
+is the generator for our group. Let our group be $Z_{q}^*$, of prime order q, then $g$
+would be the generator for $Z_{q}^*$, this would mean that for any integer value $k$,
+$g^k \in Z_{q}^*$.
+
+Once we have hashed bob's ID, we would pick a random integer $r$, an compute 
+$k = e(r*h, s*P)$
+
+We can then send our message $E_{k}[M]$ using the key $k$ and also send $r$.
+
+In order to obtain the private key, we need to ask the PKG for it. The PKG will
+compute $s*ID$ and return the result, once again, ID is the poit on the elliptic curve 
+from our previous hash function. Knowing the private key for our ID we can then decrypt 
+the message by finding k first: $k = e(s*ID, r*P)$ Which will enable us to decrypt the 
+ciphertext.
+Note that this is possible thanks to the property for the elliptic curve that 
+$e(aX, bY) = e(bX, aY)$ and because $s*ID$ is known.
+
+It is worth noting that Cock's scheme was based on the RSA setting thus we will go through 
+how that setting works below.
+
+\subsubsection{Reasons for IBE}
+Now that we know more about how an IBE scheme works, let's take a look at why it exists,
+what such a system enables. The first notable information is that such a system
+does not need a public key distribution system, the master public key is known to all
+users and thus sending an encrypted message to Bob's email address is as simple
+as using the exact same email address along with the master public key for encryption. 
+Meaning there is no need to manage large numbers of public keys such that a typical
+public key infrastructure would require.
+
+Secondly, the central system can decrypt messages locally and because of that,
+it can enable for systems with minimal setup for its users, requiring no installation 
+and instead they would simply ask for the message to the central system. Note that this 
+is not necesarily the best solution however it is a possibility with IBE.
+
+
+Certain encrypted system require a key escrow for multiple reasons, one might be 
+due to government regulations, in an IBE system, the master private key can 
+generate all keys thus enabling a key escrow.
+
+IBE also enables delegation of keys where, for example, a company employee can decrypt certain 
+emails, perhaps another employee requires to read those exact same emails, the same 
+private key can be used by both employees.
+
+Finally, this scheme enables further research into this area of cryptography.
+
+
+\subsubsection{Security of IBE}
+This specific IBE scheme relies on elliptic curves with the use of 
+billinear maps thus making it follow some variant of the Diffie-Hellman problem.
+That is, as of today, it is easy to compute values from operands to obtain a result,
+but it is impossible to obtain the operands from the result.
+For example, the use of pairings such as Weil and Tate Pairings in order 
+to obtain Billinear maps make it so that computing $aX$ is easy but finding $a$ 
+given $X$ and $Xa$ is computationally not feasible.
+
+
+Secondly, the default IBE scheme does not account for expiration of revocation of keys,
+meaning that theoretically, someone obtaining a private key for a specific ID will enable 
+that person to decrypt all past and future messages sent to that specific recipient.
+This is very dangerous and can be avoided quite easily, one way to do so is by appending an 
+expiration date to the public key, that is our ID (for example Bob's email address) and a date:
+\textit{bob@bob.com || <expiration date}. Bob will then be able to use a private key until 
+it expires and then will have to request a new one to the PKG. The time each key is valid can 
+then be variable based on how one decides to implement the system, theoretically a key could 
+be valid for years or minutes.
+
+
+\subsubsection{Comparing to a commonly used public key encryption scheme}
+Let's now see how a very popular system such as the RSA encryption scheme works, 
+that way we will be able to compare both systems and try to understand why 
+IBE is not currently commonly used.
+
 
 \subsection{An Overview of RSA}
 \subsubsection{Key generation}
@@ -262,7 +347,7 @@ would take a very long amount of time.
 (HOW MUCH ??? )
 
 
-\subsection{Math Systems at the core of Public Key Encryption}
+\subsection{Mathematical Theorems enabling RSA}
 Goal: Explain that at the core of public key encryption, underlies
 many important mathematical concepts.
 
@@ -443,18 +528,41 @@ Its use case it to enable computing modular inverses, a very common operation in
 cryptography efficiently. It characterised by a squence of operations until we reach
 our answer.
 
+\subsection{Improvements thanks to IBE}
+While identity based encryption has its flaws, what it did 
+is enable further research. From IBE was derived what is called
+attribute based encryption (or ABE), a system designed 
+for use with biometric values.
+
+
+Secondly, both IBE and ABE were the basis for functionnal encryption, 
+which takes the theories from both methods and generalises their ideas.
 
 \subsection{IBE vs RSA}
 Compare the two
 
-\subsubsection{Attacks on IBE Public key systems}
-Go through possible attacks on Public key systems
 
-\subsubsection{Are these attacks all possible on IBE? is it better or worse with IBE?}
-go through how IBE protects from attacks differently than rsa systems
+\subsection{Attacking a Public Key Encryption system}
+Many possible attacks are possible on the encryption schemes we've covered.
+For example RSA, being deterministic is not very safe until we introduce concepts such as 
+padding data. 
 
-\subsubsection{which is most safe?}
-expalin which system is safest
+Implementations on devices of encryption or decryption methods 
+can lead to security issues, for example the square and multiply algorithm,
+when not randomised is prone to side attacks due to the fact that a bit value of 1 or 0 
+will change drastically the time and electricity power required.
+
+Given that such issues are dealt with, other possible attacks on the systems we've seen here include: 
+Brute force, that is, trying out al the combinations in order to find the private key.
+
+Theoretically, it could be possible to derive the private key from the public key, it just 
+hasn't been proven mathematically that it is or it is not possible to do so.
+We've mentionned that our schemes use the Diffie–Hellman assumption (or some variant of that assumption)
+meaning that they will be safe as long as the assumption stands.
+
+Another attack worth noting is the probable message attack, given that the public keys are known 
+to attackers, one could try to encrypt all messages until there is a match.
+
 
 \section{Conclusion}
 The conclusion goes here.
