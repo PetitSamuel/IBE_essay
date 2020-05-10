@@ -270,7 +270,7 @@ meaning that theoretically, someone obtaining a private key for a specific ID wi
 that person to decrypt all past and future messages sent to that specific recipient.
 This is very dangerous and can be avoided quite easily, one way to do so is by appending an 
 expiration date to the public key, that is our ID (for example Bob's email address) and a date:
-\textit{bob@bob.com \|\| <expiration date}. Bob will then be able to use that private key until 
+\textit{bob@bob.com $\mid \mid <expiration date$}. Bob will then be able to use that private key until 
 it expires and then will have to request a new one to the PKG. The time each key is valid can 
 vary based on how one decides to implement the system, theoretically a key could 
 be valid for years or minutes depending on the systems capacity and its security requirements.
@@ -321,7 +321,7 @@ This is done simply by computing:
 \begin{equation*}
     C = M^{e}\mod n
 \end{equation*}
-Note that we must have $M \lt n$.
+Note that we must have $M < n$.
 This part is fairly simple as it only contains a single operation, though keep in mind that
 In practice $e$ could be a very large number so computing $M^{e}$ could be demanding on the device.
 
