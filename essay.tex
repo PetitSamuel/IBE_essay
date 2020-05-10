@@ -88,9 +88,23 @@ uses a set of asymmetric keys. Other popular protocols or systems include
 the Diffie-Hellman key exchange protocol which is used to exchange cryptographic 
 keys over a non secure channel. RSA is a very popular cryptosystem which includes
 algorithms and functions to compute a set of keys as well as handling encryption and decryption.
+There are also multiple mathematical methods that are used by different encryption schemes,
+these include  elliptic curves, Billinear maps or Weil and Tate Pairings to name
+the most commonly used ones.
+
+
 
 \subsection{An Overview of IBE}
-Explain what is exactly IBE now that we know more about public key encryption
+Identity based encryption (IBE), is a type of public key encryption 
+where the public key is an arbitrary string which represents information
+about a user's identity, for example, an email address. 
+\subsubsection{Brief history about IBE}
+The concept of using meaningful public keys dates back to 1984 where Adi Shamir
+introduced the concept. He was able to find a system for identity based signatures 
+but was not able to find a working scheme for IBE itself. It is only later in 
+2001 that three schemes for IBE were found, the two most common ones being 
+found by Boneh and Franklin who's method relies on elliptic curves, and 
+Clifford Cocks who's scheme relies on the RSA setting.
 
 \subsubsection{IBE typical implementation}
 how is an IBE system implemented
