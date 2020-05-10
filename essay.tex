@@ -100,15 +100,86 @@ where the public key is an arbitrary string which represents information
 about a user's identity, for example, an email address. 
 \subsubsection{Brief history about IBE}
 The concept of using meaningful public keys dates back to 1984 where Adi Shamir
-introduced the concept. He was able to find a system for identity based signatures 
-but was not able to find a working scheme for IBE itself. It is only later in 
+introduced the concept, it was quite a radical idea due to the fact that 
+public keys are typically mathematically related to the private key. The main 
+motivation for this effort was to remove the need of a public key distribution
+infrastructure that is required by all public key encryption schemes at the time.
+He was able to find a system for identity based signatures but was not able to 
+find a working scheme for IBE itself. It is only later in 
 2001 that three schemes for IBE were found, the two most common ones being 
 found by Boneh and Franklin who's method relies on elliptic curves, and 
 Clifford Cocks who's scheme relies on the RSA setting.
 
 \subsubsection{IBE typical implementation}
-how is an IBE system implemented
+As stated previously, in a Identity Based Encryption system, 
+the public key can be any arbitrary string, this fundamentally changes
+from other implementations where public keys can be meaningful instead of 
+a very large mathematical number. However this raises many questions such as: 
+if my public key is a very simple string, how do I find the corresponding private
+key to decrypt messages, and what is stopping anyone else from finding that same 
+private key and decrypting my messages? Let's have a look at how IBE schemes work.
 
+
+The idea involves a Private Key Generator (PKG), the PKG would be responsible 
+for generating private keys for the users. It would also generate a pair of 
+master keys (public key and private key), which are used for 
+encryption and decryption. The master public key is used for message encryption and the master
+private key is used to compute all users private key.
+
+
+The master public key, after its generation, would be published to all the users of the system, for a user 
+to encrypt a message, he would use both the master public key and the ID of the recipient
+(for example it could be an email address) to obtain the ciphertext.
+
+
+Then decryption would work by using the private key associated to the ID. These are all 
+computed by the PKG so the user would then have to contact the PKG and retrieve his private key,
+only then is he able to decrpyt the ciphertext. In order to obtain a private key from the PKG, a user 
+would have to prove to the PKG that he is the owner of the key he is requesting, then the key would be sent 
+through a secure channel.
+
+
+Signing a message would be very similar, a user would obtain his private key from the PKG
+and encrypt the message using the key and send the signature along with the ciphertext.
+The recipient can then verify the signature by decryting it using both the sender's ID and the 
+master public key.
+
+
+\subsubsection{Actions required by the system}
+There are 4 algorithms involved in this system, these are
+the setup algorithm which generates the pair of master public and private
+keys. The extract action generates a private key for a specific public key string (for example,
+generate the public key for bob's email address bob@bob.com).
+Then encryption is the action of obtaining the ciphertext from a message, it uses both the 
+recipient ID and the master public key. Finally, decryption happens by decrypting the ciphertext 
+using the private key generated in the extract action.
+
+
+\subsubsection{Mathematical theory}
+As mentionned previously, there are different schemes using different mathematical concepts,
+let's focus here on Elliptic curve based schemes. 
+
+
+An elliptic curve is defined by an equation of the form 
+\begin{equation*}
+    y^2 = x^3 + ax + b
+\end{equation*}
+A property of elliptic curves is that they are symmetrical about the x-axis. The reason these
+curves can be used for cryptography purposes is thanks to the fact that, say I were to compute 
+$x\*P$, where x is an integer and P is a point on an elliptic curve. We would then obtain the point Q on the 
+elliptic curve, this is done by finding the intersection to a line starting from P 
+(note that there are an infinite amount of lines going through a single point) and obtaining it's 
+symmetric point on the other side of the x axis, essentially adding P to itself, we would then do this 
+operation x times in order to obtain Q.
+
+Assuming I know the original point P, the parameters of the used curve, and the result point X, it is impossible
+to obtain x (the amount of times P was added to itself, or the amount of executed operations).
+Thus giving us a variant to the Diffie Hellman problem.
+
+Finally, it is worth noting that we can have a IBE system which uses an Billinear map 
+$e: G_{1}\timesG_{1} \rightarrow G_{2}$ so long as the Computational Diffie-Hellman problem 
+in $G_{1}$ is hard. One way to do so in the current elliptic curve system we are considering is to use 
+the Weil pairing on an elliptic curve.
 \subsubsection{What are its advantages and flaw?}
 pros and cons of IBE
 
