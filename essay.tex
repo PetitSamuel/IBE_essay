@@ -3,7 +3,9 @@
 \usepackage{amsmath}
 \usepackage{algorithmic}
 \usepackage{url}
+\usepackage{graphicx}
 \usepackage{listings}
+\graphicspath{ {./img/} }
 % need about 4 pages full to get 4K words
 \hyphenation{op-tical net-works semi-conduc-tor}
 \begin{document}
@@ -22,8 +24,9 @@ The abstract goes here.
 
 \section{Introduction}
 We will be studying the concept of Identity Based Encryption (IBE),
-a type of asymmetric (or public key) encryption system.
-It is characterised with the fact that one of its keys identifies the recipient
+a type of asymmetric (or public key) encryption system which has the 
+particularity of using two encryption keys, typically a public and a private key.
+IBE is characterised with the fact that one of its keys identifies the recipient
 (for example an email address). We will explain how such a system is possible
 and compare it to a more widely known encryption scheme: RSA. Perhaps, we will
 then be able to understand why IBE is not as widely used as RSA is today. 
@@ -35,16 +38,16 @@ Unlike symmetric cryptography which uses the same key for both encrypting and de
 messages, asymmetric cryptography uses two different keys such that one 
 is used for encrypting and the other for decrypting information.
 In this context, a key is a string of characters that is used in some mathematical
-formula to turn a information (a message for example) such that it is impossible to understand in its encrypted form. 
+formula to transform information (a message for example) such that it is impossible to understand in its encrypted form. 
 Similarly, we would then also use a key to map the encrypted information back to its original, usable form.
 In asymmetric encryption, we typically call the encryption key
 the Public Key, and the decryption key the Private Key.
-The first asymmetric key cryptosystem was published in 1976 by Whitfield Diffie and Martin Hellman, previously,
-all useful modern encryption system used symmetric key encryption systems. 
-While both systems still have their usages in todays world,
-asymmetric key encryption systems are now used on a daily basis throughout the world. With 
-systems such as both HTTP over TLS and HTTP over SSL protocols, digitally signed files, bitcoin,
-encrypted messaging services and many other all using some for of asymmetric encryption. 
+The first asymmetric key cryptosystem was published in 1976 by Whitfield Diffie and Martin Hellman.
+Previously, all useful modern encryption systems used symmetric key encryption systems. 
+While both systems are now widely used, asymmetric key encryption systems 
+have proven their potential and are now used on a daily basis throughout the world. It is implemented 
+in systems such as both HTTP over TLS and HTTP over SSL protocols, digitally signed files, bitcoin,
+encrypted messaging services and many others. 
 
 \subsubsection{How it works}
 Put simply, let's say we had a public key $K_{public}$ and $K_{private}$.
@@ -87,7 +90,7 @@ the Diffie-Hellman key exchange protocol which is used to exchange cryptographic
 keys over a non secure channel. RSA is a very popular cryptosystem which includes
 algorithms and functions to compute a set of keys as well as handling encryption and decryption.
 There are also multiple mathematical methods that are used by different encryption schemes,
-these include  elliptic curves, Billinear maps or Weil and Tate Pairings to name
+these include  elliptic curves[1], Bilinear maps[1] or Weil and Tate Pairings[1] to name
 some of the most commonly used ones.
 
 
@@ -96,33 +99,34 @@ some of the most commonly used ones.
 Identity based encryption (IBE), is a type of public key encryption 
 where the public key is an arbitrary string which represents information
 about a user's identity, for example, an email address. 
-\subsubsection{Brief history about IBE}
+\subsubsection{Brief history}
 The concept of using meaningful public keys dates back to 1984 where Adi Shamir
 introduced the concept, it was quite a radical idea due to the fact that 
 public keys are typically mathematically related to the private key. The main 
 motivation for this effort was to remove the need of a public key distribution
-infrastructure that is required by all public key encryption schemes at the time.
+infrastructure that is required by public key encryption schemes.
 He was able to find a system for identity based signatures but was not able to 
-find a working scheme for IBE itself. It is only later in 
-2001 that three schemes for IBE were found, the two most common ones being 
+find a working scheme for IBE itself and left it as an open question. 
+It is only later in 2001 that three schemes for IBE 
+were found, the two most common ones being 
 found by Boneh and Franklin who's method relies on elliptic curves, and 
 Clifford Cocks who's scheme relies on the RSA setting.
 
-\subsubsection{IBE typical implementation}
+\subsubsection{An IBE Scheme using Elliptic Curves}
 As stated previously, in a Identity Based Encryption system, 
 the public key can be any arbitrary string, this fundamentally changes
 from other implementations where public keys can be meaningful instead of 
 a very large mathematical number. However this raises many questions such as: 
 if my public key is a very simple string, how do I find the corresponding private
-key to decrypt messages, and what is stopping anyone else from finding that same 
+key to decrypt messages? and what is stopping anyone else from finding that same 
 private key and decrypting my messages? Let's have a look at how IBE schemes work.
 
 
 The idea involves a Private Key Generator (PKG), the PKG would be responsible 
-for generating private keys for the users. It would also generate a pair of 
-master keys (public key and private key), which are used for 
-encryption and decryption. The master public key is used for message encryption and the master
-private key is used to compute all users private key.
+of generating private keys for the users. It would first generate a pair of 
+master keys (public key and private key). 
+The master public key is used for message encryption and the master
+private key is used to obtain all users' private keys.
 
 
 The master public key, after its generation, would be published to all the users of the system, for a user 
@@ -130,33 +134,33 @@ to encrypt a message, he would use both the master public key and the ID of the 
 (for example it could be an email address) to obtain the ciphertext.
 
 
-Then decryption would work by using the private key associated to the ID. These are all 
+Then decryption would work by using the private key associated with the ID. These are all 
 computed by the PKG so the user would then have to contact the PKG and retrieve his private key,
-only then is he able to decrpyt the ciphertext. In order to obtain a private key from the PKG, a user 
+only then is he able to decrypt the ciphertext. In order to obtain a private key from the PKG, a user 
 would have to prove to the PKG that he is the owner of the key he is requesting, then the key would be sent 
 through a secure channel.
 
 
 Signing a message would be very similar, a user would obtain his private key from the PKG
 and encrypt the message using the key and send the signature along with the ciphertext.
-The recipient can then verify the signature by decryting it using both the sender's ID and the 
+The recipient can then verify the signature by decrypting it using both the sender's ID and the 
 master public key.
 
 
 \subsubsection{Actions required by the system}
 There are 4 algorithms involved in this system, these are
-the setup algorithm which generates the pair of master public and private
-keys. The extract action generates a private key for a specific public key string (for example,
+the \textbf{setup} algorithm which generates the pair of master public and private
+keys. The \textbf{extract} action generates a private key for a public key string (for example,
 generate the public key for bob's email address bob@bob.com).
-Then encryption is the action of obtaining the ciphertext from a message, it uses both the 
-recipient ID and the master public key. Finally, decryption happens by decrypting the ciphertext 
-using the private key generated in the extract action.
+Then, \textbf{encryption} is the action of obtaining the ciphertext from a message, it uses both the 
+recipient ID and the master public key. Finally, \textbf{decryption} happens by decrypting the ciphertext 
+using the private key generated in the extract action and the ciphertext to obtain the original message.
 
 
 \subsubsection{Mathematical theory}
-As mentionned previously, there are different schemes using different mathematical concepts,
-let's focus here on Elliptic curve based schemes. This topic is quite maths heavy thus 
-I will try to focus on the high level mathematical theory here whithout 
+As mentioned previously, there are different schemes using different mathematical concepts,
+let's focus here on Elliptic curve based IBE schemes. This topic involves complicated maths so 
+I will try to focus on the high level mathematics theory here without 
 going into too much detail.
 
 
@@ -164,46 +168,57 @@ An elliptic curve is defined by an equation of the form
 \begin{equation*}
     y^2 = x^3 + ax + b
 \end{equation*}
-A property of elliptic curves is that they are symmetrical about the x-axis. The reason these
-curves can be used for cryptography purposes is thanks to the fact that, say I were to compute 
-$x\*P$, where x is an integer and P is a point on an elliptic curve. We would then obtain the point Q on the 
-elliptic curve, this is done by finding the intersection to a line starting from P 
-(note that there are an infinite amount of lines going through a single point) and obtaining it's 
-symmetric point on the other side of the x axis, essentially adding P to itself, we would then do this 
+A property of elliptic curves is that they are symmetrical about the x-axis. Here is 
+a graph of a typical elliptic curve:
+\begin{center}
+    \includegraphics[scale=0.5]{ecurve}
+\end{center}
+
+The reason these
+curves can be used for cryptographic purposes is thanks to the fact that, computing 
+$x\*P$, where $x$ is an integer and $P$ is a point on an elliptic curve. 
+We would then obtain the point Q on the curve, this is done by finding the intersection to a 
+line starting from P (rember that there are an infinite number of lines that can go through a single point)
+and obtaining it's symmetric point on the other side of the x axis, essentially adding P to itself, we would then do this 
 operation x times in order to obtain Q.
-
 Assuming I know the original point P, the parameters of the used curve, and the result point X, it is impossible
-to obtain x (the amount of times P was added to itself, or the amount of executed operations).
-Thus giving us a variant to the Diffie Hellman problem.
+to obtain x (the amount of times P was added to itself).
+Thus giving us a variant to the Diffie Hellman problem, which states that certain computations with 
+certain groups of numbers are very easy to do one way, but very hard the other way.
 
-Finally, it is worth noting that we can have a IBE system which uses an Billinear map 
+
+Finally, it is worth noting that we can have a IBE system which uses an Bilinear map 
 $e: G_{1}\times G_{1} \rightarrow G_{2}$ so long as the Computational Diffie-Hellman problem 
-in $G_{1}$ is hard, meaning we can't map back to the group $G_{1}$ from $G_{2}$. 
+in $G_{1}$ is hard, meaning we can't map back to the group $G_{1}$ from $G_{2}$ then we can have a 
+safe encryption system. 
 One way to do so in the current elliptic curve system we are considering is to use 
-the Weil pairing on an elliptic curve. Ideally the Billinear map should be efficiently computable.
+the Weil pairing[2] on an elliptic curve. Ideally the bilinear map should be efficiently computable.
 
 
 Let's take a look at the high level maths behind the 4 algorithms which enable 
-encryption and decryption of messages using these concepts we just saw.
+encryption and decryption of messages using these concepts.
 
-The setup would then pick an elliptic curve, a secret $s$ and a point on the 
-elliptic curve P. The system then publishes $P$ and $P\times s$ as the master public key.
+The setup would then pick an elliptic curve 
+(in other words, a set of parameters for the elliptic curve equation), 
+a secret $s$ and a point on the 
+elliptic curve $P$. The system then publishes $P$ and $P\*s$ as the master public key.
 
 
 Encryption would then happen by hashing the ID attribute (for example bob's email address)
 to a point on the elliptic curve (let our hash function be $h = g^x$ from some x). Thus
-hashing bob's ID would set $ x = ID$. We obtain a point of the curve by doing so since $g$
+hashing bob's ID would set $ x = ID_{bob}$. We obtain a point of the curve by doing so since $g$
 is the generator for our group. Let our group be $Z_{q}^*$, of prime order q, then $g$
 would be the generator for $Z_{q}^*$, this would mean that for any integer value $k$,
 $g^k \in Z_{q}^*$.
 
-Once we have hashed bob's ID, we would pick a random integer $r$, an compute 
+Once we have hashed bob's ID, we pick a random integer $r$, an compute 
 $k = e(r*h, s*P)$
 
-We can then send our message $E_{k}[M]$ using the key $k$ and also send $r$.
+We can then encrypt our message $E_{k}[M]$ using the key $k$ and send $r$ as well as the ciphertext
+to the recipient.
 
 In order to obtain the private key, we need to ask the PKG for it. The PKG will
-compute $s*ID$ and return the result, once again, ID is the poit on the elliptic curve 
+compute $s*ID$ and return the result, once again, ID is the point on the elliptic curve 
 from our previous hash function. Knowing the private key for our ID we can then decrypt 
 the message by finding k first: $k = e(s*ID, r*P)$ Which will enable us to decrypt the 
 ciphertext.
@@ -225,7 +240,7 @@ public key infrastructure would require.
 Secondly, the central system can decrypt messages locally and because of that,
 it can enable for systems with minimal setup for its users, requiring no installation 
 and instead they would simply ask for the message to the central system. Note that this 
-is not necesarily the best solution however it is a possibility with IBE.
+is not necessarily the best solution however it is a possibility with IBE.
 
 
 Certain encrypted system require a key escrow for multiple reasons, one might be 
@@ -241,11 +256,11 @@ Finally, this scheme enables further research into this area of cryptography.
 
 \subsubsection{Security of IBE}
 This specific IBE scheme relies on elliptic curves with the use of 
-billinear maps thus making it follow some variant of the Diffie-Hellman problem.
+bilinear maps thus making it follow some variant of the Diffie-Hellman problem.
 That is, as of today, it is easy to compute values from operands to obtain a result,
 but it is impossible to obtain the operands from the result.
 For example, the use of pairings such as Weil and Tate Pairings in order 
-to obtain Billinear maps make it so that computing $aX$ is easy but finding $a$ 
+to obtain bilinear maps make it so that computing $aX$ is easy but finding $a$ 
 given $X$ and $Xa$ is computationally not feasible.
 
 
@@ -261,12 +276,12 @@ be valid for years or minutes.
 
 \subsubsection{Improvements thanks to IBE}
 While identity based encryption has its flaws, what it did 
-is enable further research. From IBE was derived what is called
+is to enable further research. From IBE was derived what is called
 attribute based encryption (or ABE), a system designed 
 for use with biometric values.
 
 
-Secondly, both IBE and ABE were the basis for functionnal encryption, 
+Secondly, both IBE and ABE were the basis for functional encryption, 
 which takes the theories from both methods and generalises their ideas.
 
 
@@ -294,7 +309,7 @@ p and q. We obtain n from their product, n is used as part of the encryption and
 as we will see soon. Then we use Euler's totient function such as to count the positive integers
 up to $(p - 1) \* (q - 1)$, we could alternatively use Carmichael's totient function here 
 with a slight change in algorithm, the same keys would be generated regardless. We then pick a value e
-such that it is positive, smaller than our value obtained from Euler's totient $\phi(n) $ function and coprime to it.
+such that it is positive, smaller than the value obtained from Euler's totient $\phi(n) $ function and coprime to it.
 We have then obtained the public key $\{e,n\}$. To compute our private key with simply compute 
 the modular multiplicative inverse of e modulo $\phi(n)$ ($d \equiv e^{-1} mod(\phi(n))$) to obtain
 our private key: $\{d,n\}$.
@@ -306,7 +321,7 @@ This is done simply by computing:
     C = M^{e}\mod n
 \end{equation*}
 This part is fairly simple as it only contains a single operation, though keep in mind that
-in practice $e$ could be a very large number so $M^{e}$ could be demanding on the device.
+In practice $e$ could be a very large number so $M^{e}$ could be demanding on the device.
 
 
 \subsubsection{Decryption}
@@ -323,7 +338,7 @@ RSA supports the use for signature. Signatures are used in order to make
 sure a message was sent by a specific person.
 
 The first step for verifying signatures is for the sender to generate one.
-Using the senders private key and the message to send we can obtain the signature
+Using the sender's private key and the message to send we can obtain the signature
 S:
 \begin{equation*}
     S = M^{d}\mod n
@@ -334,8 +349,8 @@ Note that we must respect $M < n$ here too.
 
 \subsubsection{Verifying signatures}
 The person receiving the message can then verify the identity of the sender.
-If we use the senders public key in the following formula to obtain the original
-message, then we can be certain of the senders identity.
+If we use the sender's public key in the following formula to obtain the original
+message, then we can be certain of the sender's identity.
 \begin{equation*}
     M = S^{e}\mod n
 \end{equation*}
@@ -345,7 +360,7 @@ Once again, $M < n$ is required.
 \subsubsection{Security}
 RSA's security relies on the fact that factoring numbers is complicated and expensive.
 For instance, let's assume that we have a public key $\{e,n\}$, we could in theory find
-the values for $p$ and $q$ from the keygeneration algorithm by factoring $n$ (recall that $n = p\*q$). Then all we would have to do is 
+the values for $p$ and $q$ from the key generation algorithm by factoring $n$ (recall that $n = p\*q$). Then all we would have to do is 
 use Euler's theorem to obtain $\phi(n)$ and from there we could find $e$ and finally 
 obtain the private key $d$ by solving the equation $e\*d = 1\mod \phi(n)$.
 
@@ -429,7 +444,7 @@ that are less than or equal to $N$.
 
 \subsubsection{Square and multiply}
 Something you may have noticed is that some of these operations require 
-computing many exponents, given the fact that we generaly pick very large 
+computing many exponents, given the fact that we generally pick very large 
 numbers for encryptions, finding a way to compute massive exponents 
 in a way that is more manageable for computers would help efficient computations 
 quite drastically. This is exactly what the square and multiply algorithm
@@ -507,7 +522,7 @@ Note that $D\mod(p - 1)$ can be computed on setup instead of during decryption
 thus making this approach much faster for message decryption.
 
 Once we have computed both $M_{q}$ and $M_{p}$, we then need to find such 
-that M stasfies both:
+that M satisfies both:
 \begin{equation*}
     M \equiv (C^{d}\mod n)\mod q
 \end{equation*}
@@ -529,7 +544,7 @@ to some of the main ideas.
 
 \subsection{Comparisons between IBE and RSA}
 Let's now go through the many pros and cons of the IBE schemes we 
-have covered here and, where apropriate, compare to the functionning of the 
+have covered here and, where appropriate, compare to the functioning of the 
 RSA encryption scheme.
 
 
@@ -538,14 +553,14 @@ The first obvious advantage to IBE is the fact that we use
 meaningful public keys. This removes the need for public key distribution system
 that is typically in place in most public key encryption systems. For example,
 RSA typically distributes public keys using Certificate Authorities (CA), these authorities
-essentially sign public keys using their own private key and returns the signature. A user
+essentially sign public keys using their own private key and return the signature. A user
 can the use that signature to verify a public key is in fact the one we think it is 
 and not some attackers public key for example. Put simply, 
 they essentially verify the owner of the certificate, 
 ensure they are who they say they are and that the provided information is valid, this
 means the users put a trust in these CAs to provide accurate public keys.
 In short: a key distribution infrastructure is complex, expensive and being able to 
-use a public key that the user knows without looking it up is a great advantage.
+using a public key that the user knows without looking it up is a great advantage.
 
 
 Users can send messages to a recipient who has not contacted the PKG yet, meaning that 
@@ -559,8 +574,8 @@ sending messages that are only decryptable at some time in the future, this is a
 case with RSA as keys are not generated by a central system.
 
 
-We've also mentionned that message decryption can happen server-side, meaning 
-this could enable for applications with minimal setup for users.
+We've also mentioned that message decryption can happen server-side, meaning 
+this could enable applications with minimal setup for users.
  
 
 \subsubsection{Drawbacks of IBE}
@@ -570,7 +585,7 @@ public and private keys. This means that the PKG is in a position
 of generating all private keys and decrypting all messages that go through 
 the system. This is known as a key escrow, it can, in some cases
 be advantageous as a law may require for such a system or in an 
-enterprise environement a key escrow may be desirable. Another
+in an enterprise environment a key escrow may be desirable. Another
 way this could be seen as an advantage is in some cases this can allow 
 for recovering encrypted data in the event of the loss of a private key by a user. 
 Finally, another way this is an advantage is for delegation of keys, where in some 
@@ -578,9 +593,9 @@ cases multiple persons may require to read the same messages.
 
 
 However, for a public application, this requires great trust in the system 
-and thus by definition is not widly adopted in systems such as 
+and thus by definition is not widely adopted in systems such as 
 private channels or encrypted messaging systems. The much more 
-widly used RSA is much preferred in such applications, even though it requires
+widely used RSA is much preferred in such applications, even though it requires
 a key distribution system.
 It is also a concern as, theoretically, if the master private key was stolen,
 then an attacker would be in a position of decrypting all messages, this 
@@ -590,7 +605,7 @@ scheme we have studied here does not enable for key revocation or expiration.
 In RSA, none of this is an issue since there exists no master key that enables 
 somehow the decryption of all messages, in fact, in RSA if a single key is cracked,
 then only a single user will be impacted. This is also the case for IBE however,
-cracking the main private key would mean the decryption of all users message becomes possible.
+cracking the main private key would mean the decryption of all users' messages becomes possible.
 In short, IBE, by definition requires a lot of trust in the system while it is not 
 the case for RSA.
 
@@ -613,11 +628,11 @@ when not randomised is prone to side attacks due to the fact that a bit value of
 will change drastically the time and electricity power required.
 
 Given that such issues are dealt with, other possible attacks on the systems we've seen here include: 
-Brute force, that is, trying out al the combinations in order to find the private key.
+Brute force, that is, trying out all the combinations in order to find the private key.
 
 Theoretically, it could be possible to derive the private key from the public key, it just 
 hasn't been proven mathematically that it is or it is not possible to do so.
-We've mentionned that our schemes use the Diffie–Hellman assumption (or some variant of that assumption)
+We've mentioned that our schemes use the Diffie–Hellman assumption (or some variant of that assumption)
 meaning that they will be safe as long as the assumption stands.
 
 Another attack worth noting is the probable message attack, given that the public keys are known 
@@ -636,9 +651,9 @@ its drawbacks. Mainly the fact that a key escrow exists by definition in the sys
 without having the choice is the main drawback for IBE, it requires too much 
 trust in the system for public applications. On the other hand, some argue that 
 IBE is a better compromise between security and complexity for users, the main 
-question being wether users see it that way or not.
-Perhaps, for the moment, IBE's advnatages are more suited for specific 
-environements such as use within an enterprise for example.  
+question being whether users see it that way or not.
+Perhaps, for the moment, IBE's advantages are more suited for specific 
+environments such as use within an enterprise for example.  
 A lot of research is currently being done on this topic, so perhaps one day a variant 
 of such an IBE scheme could become the industry standard for encryption.
 
@@ -666,4 +681,5 @@ page 1 to 45.
 [7] Nico Dottling, Sanjam Garg "Identity-Based Encryption from the Diffie-Hellman Assumption"
 
 \end{document}
+
 
