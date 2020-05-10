@@ -217,24 +217,28 @@ $k = e(r*h, s*P)$
 We can then encrypt our message $E_{k}[M]$ using the key $k$ and send $r$ as well as the ciphertext
 to the recipient.
 
-In order to obtain the private key, we need to ask the PKG for it. The PKG will
-compute $s*ID$ and return the result, once again, ID is the point on the elliptic curve 
-from our previous hash function. Knowing the private key for our ID we can then decrypt 
+In order to obtain the private key for a specific ID (for example, $ID_{bob}$ being bob's email address),
+we need to ask the PKG for it. The PKG will
+compute $s*ID$ and return the result, once again, we once again map ID to a point on the elliptic curve
+using our previously mentioned hash function.
+Knowing the private key for our ID, we can then decrypt 
 the message by finding k first: $k = e(s*ID, r*P)$ Which will enable us to decrypt the 
 ciphertext.
 Note that this is possible thanks to the property for the elliptic curve that 
-$e(aX, bY) = e(bX, aY)$ and because $s*ID$ is known.
+$e(aX, bY) = e(bX, aY)$.
 
-It is worth noting that Cock's scheme was based on the RSA setting thus we will go through 
-how that setting works below.
+
+It is worth noting that Cock's scheme was based on the RSA setting, we will brefly
+go over RSA encryption systems in order to understand better how his scheme works.
+
 
 \subsubsection{Reasons for IBE}
-Now that we know more about how an IBE scheme works, let's take a look at why it exists,
+Now that we know more about how an IBE scheme works, let's take a look at why it exists and
 what such a system enables. The first notable information is that such a system
 does not need a public key distribution system, the master public key is known to all
 users and thus sending an encrypted message to Bob's email address is as simple
 as using the exact same email address along with the master public key for encryption. 
-Meaning there is no need to manage large numbers of public keys such that a typical
+Meaning there is no need to manage large numbers of public keys that a typical
 public key infrastructure would require.
 
 Secondly, the central system can decrypt messages locally and because of that,
@@ -251,15 +255,12 @@ IBE also enables delegation of keys where, for example, a company employee can d
 emails, perhaps another employee requires to read those exact same emails, the same 
 private key can be used by both employees.
 
-Finally, this scheme enables further research into this area of cryptography.
-
-
 \subsubsection{Security of IBE}
 This specific IBE scheme relies on elliptic curves with the use of 
 bilinear maps thus making it follow some variant of the Diffie-Hellman problem.
 That is, as of today, it is easy to compute values from operands to obtain a result,
 but it is impossible to obtain the operands from the result.
-For example, the use of pairings such as Weil and Tate Pairings in order 
+For example, the use of pairings such as Weil and Tate Pairings[1] in order 
 to obtain bilinear maps make it so that computing $aX$ is easy but finding $a$ 
 given $X$ and $Xa$ is computationally not feasible.
 
@@ -269,35 +270,35 @@ meaning that theoretically, someone obtaining a private key for a specific ID wi
 that person to decrypt all past and future messages sent to that specific recipient.
 This is very dangerous and can be avoided quite easily, one way to do so is by appending an 
 expiration date to the public key, that is our ID (for example Bob's email address) and a date:
-\textit{bob@bob.com || <expiration date}. Bob will then be able to use a private key until 
+\textit{bob@bob.com \|\| <expiration date}. Bob will then be able to use that private key until 
 it expires and then will have to request a new one to the PKG. The time each key is valid can 
-then be variable based on how one decides to implement the system, theoretically a key could 
-be valid for years or minutes.
+vary based on how one decides to implement the system, theoretically a key could 
+be valid for years or minutes depending on the systems capacity and its security requirements.
 
-\subsubsection{Improvements thanks to IBE}
-While identity based encryption has its flaws, what it did 
-is to enable further research. From IBE was derived what is called
-attribute based encryption (or ABE), a system designed 
-for use with biometric values.
+\subsubsection{IBE: Pushing Research Forward}
+Even though identity based encryption has its flaws, it did however 
+push further research in this area. From IBE was derived what is called
+attribute based encryption (or ABE), a public key encryption system where the secret key is dependent 
+on a users attribute (such as biometric information, country of birth...).
 
-
-Secondly, both IBE and ABE were the basis for functional encryption, 
-which takes the theories from both methods and generalises their ideas.
-
-
-\subsubsection{Comparing to a commonly used public key encryption scheme}
-Let's now see how a very popular system such as the RSA encryption scheme works, 
-that way we will be able to compare both systems and try to understand why 
-IBE is not currently commonly used.
+Both IBE and ABE were the basis for the creation of functional encryption, 
+which is a generalisation of both encryption methods.
 
 
 \subsection{An Overview of RSA}
-\subsubsection{Key generation}
+Let's now see how a very popular system such as the RSA encryption scheme works, 
+this will be an opportunity to understand how Clifford Cocks's RSA based scheme works.
+We will then be able to compare both systems and try to understand why 
+IBE is not currently commonly used.
+The RSA encryption system is also a public key encryption method 
+which only have 3 actions supporting it: setup, encrypt and decrypt.
 
+\subsubsection{Key generation}
+The following algorithm enables key generation:
 \begin{algorithmic}
 \STATE $p \leftarrow prime()$
 \COMMENT{prime() returns a prime number}
-\STATE $q \leftarrow prime(N)$
+\STATE $q \leftarrow prime()$
 \STATE $n \leftarrow p \* q$
 \STATE $\phi (n) \leftarrow (p - 1) \* (q - 1)$
 \STATE $e \leftarrow coprime(\phi (n))$
@@ -305,12 +306,12 @@ IBE is not currently commonly used.
 \STATE $d \equiv e^{-1} mod \phi(n)$
 \end{algorithmic}
 To explain a bit more about this algorithm, we start by generating randomly two prime numbers
-p and q. We obtain n from their product, n is used as part of the encryption and decryption function
+$p$ and $q$. We obtain $n$ from their product, $n$ is used as part of the encryption and decryption function
 as we will see soon. Then we use Euler's totient function such as to count the positive integers
-up to $(p - 1) \* (q - 1)$, we could alternatively use Carmichael's totient function here 
-with a slight change in algorithm, the same keys would be generated regardless. We then pick a value e
+up to $(p - 1) \* (q - 1)$ that are relatively prime to its input, we could alternatively use Carmichael's totient function here 
+with a slight change in algorithm, the same keys would be generated regardless. We then pick a value $e$
 such that it is positive, smaller than the value obtained from Euler's totient $\phi(n) $ function and coprime to it.
-We have then obtained the public key $\{e,n\}$. To compute our private key with simply compute 
+We have then obtained the public key $\{e,n\}$. To compute our private key with simply find 
 the modular multiplicative inverse of e modulo $\phi(n)$ ($d \equiv e^{-1} mod(\phi(n))$) to obtain
 our private key: $\{d,n\}$.
 
@@ -320,41 +321,17 @@ This is done simply by computing:
 \begin{equation*}
     C = M^{e}\mod n
 \end{equation*}
+Note that we must have $M \lt n$.
 This part is fairly simple as it only contains a single operation, though keep in mind that
-In practice $e$ could be a very large number so $M^{e}$ could be demanding on the device.
-
+In practice $e$ could be a very large number so computing $M^{e}$ could be demanding on the device.
 
 \subsubsection{Decryption}
-Finally, for decryption, given that we have a private key $\{d,n\}$, and a ciphertext
+Finally, given that we have a private key $\{d,n\}$, and a ciphertext $C$
 which was encrypted using the private key's corresponding public key, we can obtain the original
 message M using a formula very similar to that of the encryption:
 \begin{equation*}
     M = C^{d}\mod n
 \end{equation*}
-
-
-\subsubsection{Computing Signatures}
-RSA supports the use for signature. Signatures are used in order to make 
-sure a message was sent by a specific person.
-
-The first step for verifying signatures is for the sender to generate one.
-Using the sender's private key and the message to send we can obtain the signature
-S:
-\begin{equation*}
-    S = M^{d}\mod n
-\end{equation*}
-We would then send the signature S with the ciphertext to the recipient.
-Note that we must respect $M < n$ here too.
-
-
-\subsubsection{Verifying signatures}
-The person receiving the message can then verify the identity of the sender.
-If we use the sender's public key in the following formula to obtain the original
-message, then we can be certain of the sender's identity.
-\begin{equation*}
-    M = S^{e}\mod n
-\end{equation*}
-Once again, $M < n$ is required.
 
 
 \subsubsection{Security}
@@ -364,18 +341,20 @@ the values for $p$ and $q$ from the key generation algorithm by factoring $n$ (r
 use Euler's theorem to obtain $\phi(n)$ and from there we could find $e$ and finally 
 obtain the private key $d$ by solving the equation $e\*d = 1\mod \phi(n)$.
 
-In practise though, we pick very large values for p and n, factoring very large prime
+In practise though, we pick very large prime values for p and n, factoring very large prime
 numbers is very hard and trying to obtain $p$ and $q$ using a brute force method
 would be very expensive.
 
 
-\subsection{Mathematical Theorems enabling RSA}
-Goal: Explain that at the core of public key encryption, underlies
-many important mathematical concepts.
+\subsubsection{Mathematical Theorems enabling RSA}
+There are many mathematical theorems and optimisation
+used in the implementation of RSA as well as RSA based encryption schemes such as 
+Cock's scheme for IBE, let's now introduce some
+the most common ones here.
 
 
-\subsubsection{Discrete logarithms}
-The difficulty of breaking a Public Key encryption system is based on the 
+\subsubsection*{Discrete logarithms}
+The difficulty of breaking an RSA-based encryption system is based on the 
 Discrete Logarithm problem (DLP). 
 Given a multiplicative group $G_{n}^{*}$ of order $n$,
 Let's then define the element $\alpha$ such that it is a subgroup of $G_{n}^{*}$ 
@@ -398,7 +377,7 @@ make this problem much easier to solve, using methods such as the
 Pohlig–Hellman algorithm. In order to be safe, one can follow the rule
 that a prime must be of the form $2p + 1$, where $p$ is a large prime number. 
 
-\subsubsection{Prime numbers}
+\subsubsection*{Prime numbers}
 As we have started to introduce prime numbers earlier, we can't help 
 but notice that prime numbers are at the core of many concepts being
 used in the types of  asymmetric encryptions we are covering here. 
@@ -442,7 +421,7 @@ Its distribution is described as such:
 Where $\pi(N)$ is the prime counting function: it computes the amount of primes
 that are less than or equal to $N$.
 
-\subsubsection{Square and multiply}
+\subsubsection*{Square and multiply}
 Something you may have noticed is that some of these operations require 
 computing many exponents, given the fact that we generally pick very large 
 numbers for encryptions, finding a way to compute massive exponents 
@@ -486,7 +465,7 @@ and thus we may be able to obtain a private key using such methods.
 
 There are ways to counter this, known as padding (explained later and add a bit here).
 
-\subsubsection{Chinese remainder theorem}
+\subsubsection*{Chinese remainder theorem}
 The chinese remainder theorem plays a big role in optimising 
 the amount of work required for decrypting a message as well as 
 signature verification.
@@ -535,11 +514,6 @@ chinese remainder theorem, we can directly assume that:
     M \equiv (C^{d}\mod n)\mod pq = M \equiv C^{d}\mod pq
 \end{equation*}
 Thus obtaining the decrypted message M which is what we were looking for.
-
-
-There are many other mathematical theorems and optimisation
-used in the implementation of RSA, however this should serve as an introduction
-to some of the main ideas.
 
 
 \subsection{Comparisons between IBE and RSA}
@@ -659,7 +633,7 @@ of such an IBE scheme could become the industry standard for encryption.
 
 \appendix
 \section{Pairing Based cryptosystems}
-[1]Ben Lynn June "ON THE IMPLEMENTATION OF PAIRING-BASED CRYPTOSYSTEMS", 
+[1]Ben Lynn June "On The Implementation of Pairing-Based cryptosystems", 
 page 1 to 45.
 
 \section{IBE Elliptic curve scheme}
